@@ -1,0 +1,40 @@
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+.env # Environment variables
+
+# Build artifacts
+build/
+dist/
+out/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+/orcamentos.db* # Specifically ignore the database files shown in your image
+
+# IDE and OS specific files
+.vscode/ # VS Code settings
+.idea/   # IntelliJ IDEA settings
+.DS_Store # macOS
+Thumbs.db # Windows
+ehthumbs.db # Windows
+.project
+.classpath
+.settings/
+
+# Logs
+logs/
+*.log
+
+# npm package manager files
+package-lock.json
+# If you are using yarn, you might also want to ignore yarn.lock
+# yarn.lock
+
+# Miscellaneous
+*.zip
+*.tar.gz
+*.rar

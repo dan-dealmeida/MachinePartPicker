@@ -1,0 +1,21 @@
+{
+  "name": "projeto-orcamentos",
+  "version": "1.0.0",
+  "description": "Protótipo de uma aplicação de desktop para gerar orçamentos.",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "db:setup": "electron ./database/setup.js",
+    "rebuild": "electron-rebuild" 
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^25.3.0",
+    "electron-rebuild": "^3.2.9"
+  },
+  "dependencies": {
+    "better-sqlite3": "^8.4.0"
+  }
+}

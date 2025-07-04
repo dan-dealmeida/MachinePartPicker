@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self'">
+    <title>Gerador de Orçamentos</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Catálogo de Componentes</h2>
+        <div id="catalogo-componentes"></div>
+    </div>
+
+    <div class="main-content">
+        <h1>Novo Orçamento</h1>
+        <label for="nome-cliente">Nome do Cliente:</label>
+        <input type="text" id="nome-cliente" placeholder="Digite o nome do cliente">
+        <h2>Itens do Orçamento</h2>
+        <div id="orcamento-itens-container">
+            <p id="sem-itens-aviso">Nenhum item adicionado.</p>
+        </div>
+        <hr>
+
+        <h3>SubTotal: <span id="valor-subtotal">R$ 0.00</span></h3>
+        
+        <div class="desconto-container">
+            <div>
+                <label for="select-tipo-desconto">Tipo de Desconto:</label>
+                <select id="select-tipo-desconto">
+                    <option value="">Nenhum</option>
+                    <option value="percentage">Percentual (%)</option>
+                    <option value="fixed">Fixo (R$)</option>
+                </select>
+            </div>
+            <div>
+                <label for="input-valor-desconto">Valor do Desconto:</label>
+                <input type="number" id="input-valor-desconto" placeholder="0">
+            </div>
+            <button id="btn-aplicar-desconto" style="align-self: flex-end; margin-bottom: 10px;">Aplicar</button>
+        </div>
+        <h3>Total: <span id="valor-total">R$ 0.00</span></h3>
+        <button id="salvar-orcamento-btn">Salvar Orçamento</button>
+    </div>
+
+    <div class="management-column">
+        <h2>Gerenciamento</h2>
+        
+        <form id="form-add-categoria">
+            <h3>Nova Categoria</h3>
+            <label for="nome-nova-categoria">Nome:</label>
+            <input type="text" id="nome-nova-categoria" required>
+            <button type="submit">Adicionar Categoria</button>
+        </form>
+
+        <form id="form-add-componente">
+            <h3>Novo Componente</h3>
+            <label for="nome-novo-componente">Nome:</label>
+            <input type="text" id="nome-novo-componente" required>
+            
+            <label for="desc-novo-componente">Descrição:</label>
+            <input type="text" id="desc-novo-componente">
+            
+            <label for="preco-novo-componente">Preço (R$):</label>
+            <input type="number" id="preco-novo-componente" step="0.01" required>
+
+            <label for="categoria-novo-componente">Categoria:</label>
+            <select id="categoria-novo-componente" required>
+                <option value="">-- Selecione --</option>
+                </select>
+            
+            <button type="submit">Adicionar Componente</button>
+        </form>
+    </div>
+
+    <script src="./renderer.js"></script>
+</body>
+</html>
