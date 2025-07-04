@@ -5,8 +5,8 @@
 ---
 
 ### 📸 Application Demo
-*(Placeholder for a GIF showing the application in action)*
-![Application Screenshot](https://i.imgur.com/239986ac-bcb0-4887-b02a-1df30a2f550d.png)
+![image](https://github.com/user-attachments/assets/9e220936-190d-4751-8a51-f9b847ba99c7)
+
 
 ---
 
