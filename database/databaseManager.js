@@ -1,23 +1,19 @@
 // database/databaseManager.js
 const path = require('path');
-const Database = require('better-sqlite3');
+const sqlite3 = require('sqlite3').verbose(); // .verbose() dá mais informações de debug
 
-// O caminho para o arquivo do banco de dados será na raiz do projeto
 const dbPath = path.resolve(__dirname, '../orcamentos.db');
 
-try {
-  // A instância do banco de dados é criada aqui, uma única vez.
-  const db = new Database(dbPath);
-  console.log('Conexão com o banco de dados SQLite estabelecida com sucesso.');
-  
-  // Garante que o Node.js não vai fechar a conexão se não houver mais eventos
-  db.pragma('journal_mode = WAL');
+// A conexão agora é assíncrona, então exportamos a instância do banco
+const db = new sqlite3.Database(dbPath, (err) => {
+    if (err) {
+        console.error('Erro ao conectar com o banco de dados SQLite:', err.message);
+    } else {
+        console.log('Conexão com o banco de dados SQLite estabelecida com sucesso.');
+    }
+});
 
-  // Exportamos a instância única (Padrão Singleton via cache de módulo)
-  module.exports = db;
+// Aumenta o tempo de espera se o banco estiver ocupado (em milissegundos)
+db.configure('busyTimeout', 5000);
 
-} catch (error) {
-  console.error('Erro ao conectar com o banco de dados:', error);
-  // Se não conseguir conectar, exporta null para que o resto da app possa lidar com o erro.
-  module.exports = null;
-}
+module.exports = db;

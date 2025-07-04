@@ -6,7 +6,8 @@
   "scripts": {
     "start": "electron .",
     "db:setup": "electron ./database/setup.js",
-    "rebuild": "electron-rebuild" 
+    "db:populate": "electron ./database/populate.js",
+    "rebuild": "electron-rebuild"
   },
   "keywords": [],
   "author": "",
@@ -16,6 +17,6 @@
     "electron-rebuild": "^3.2.9"
   },
   "dependencies": {
-    "better-sqlite3": "^8.4.0"
+    "sqlite3": "^5.1.7"
   }
 }

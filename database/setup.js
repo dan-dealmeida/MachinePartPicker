@@ -6,9 +6,8 @@ if (!db) {
   process.exit(1);
 }
 
-console.log('Iniciando a configuração do banco de dados (v2)...');
+console.log('Iniciando a configuração do banco de dados com a biblioteca sqlite3...');
 
-// Adicionando a nova tabela 'categorias' e alterando 'componentes'
 const setupStatements = `
   CREATE TABLE IF NOT EXISTS categorias (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -31,24 +30,40 @@ const setupStatements = `
     valor_total REAL NOT NULL,
     itens TEXT NOT NULL
   );
-
-  -- Inserindo categoria padrão se não existir
-  INSERT INTO categorias (nome) SELECT 'Processadores' WHERE NOT EXISTS (SELECT 1 FROM categorias WHERE nome = 'Processadores');
-  INSERT INTO categorias (nome) SELECT 'Memórias' WHERE NOT EXISTS (SELECT 1 FROM categorias WHERE nome = 'Memórias');
-  INSERT INTO categorias (nome) SELECT 'Armazenamento' WHERE NOT EXISTS (SELECT 1 FROM categorias WHERE nome = 'Armazenamento');
-
-  -- Atualizando componentes existentes para terem uma categoria (exemplo)
-  -- NOTA: Em um banco real, seria preciso uma migração mais cuidadosa.
-  UPDATE componentes SET categoria_id = (SELECT id FROM categorias WHERE nome = 'Processadores') WHERE nome = 'Processador PowerCore' AND categoria_id IS NULL;
-  UPDATE componentes SET categoria_id = (SELECT id FROM categorias WHERE nome = 'Memórias') WHERE nome = 'Memória RAM 16GB' AND categoria_id IS NULL;
-  UPDATE componentes SET categoria_id = (SELECT id FROM categorias WHERE nome = 'Armazenamento') WHERE nome = 'SSD UltraFast 1TB' AND categoria_id IS NULL;
 `;
 
-try {
-  db.exec(setupStatements);
-  console.log('Tabelas (v2) criadas e dados de exemplo inseridos/atualizados com sucesso.');
-} catch (error) {
-  console.error('Erro ao criar/atualizar as tabelas:', error);
-} finally {
-  db.close();
-}
+// db.serialize garante que os comandos dentro dele rodem em sequência.
+db.serialize(() => {
+  // Executa as criações de tabela.
+  db.exec(setupStatements, (err) => {
+    if (err) {
+      console.error('Erro ao criar as tabelas:', err.message);
+    } else {
+      console.log('Tabelas criadas com sucesso ou já existentes.');
+
+      // Após criar as tabelas, insere os dados de exemplo.
+      const insertStatements = `
+        INSERT INTO categorias (nome) SELECT 'Processadores' WHERE NOT EXISTS (SELECT 1 FROM categorias WHERE nome = 'Processadores');
+        INSERT INTO categorias (nome) SELECT 'Memórias' WHERE NOT EXISTS (SELECT 1 FROM categorias WHERE nome = 'Memórias');
+        INSERT INTO categorias (nome) SELECT 'Armazenamento' WHERE NOT EXISTS (SELECT 1 FROM categorias WHERE nome = 'Armazenamento');
+      `;
+
+      db.exec(insertStatements, (err) => {
+        if (err) {
+          console.error('Erro ao inserir categorias de exemplo:', err.message);
+        } else {
+          console.log('Categorias de exemplo inseridas com sucesso.');
+        }
+
+        // Fecha a conexão com o banco de dados após tudo terminar.
+        db.close((err) => {
+          if (err) {
+            console.error('Erro ao fechar a conexão com o banco de dados:', err.message);
+          } else {
+            console.log('Conexão com o banco de dados fechada.');
+          }
+        });
+      });
+    }
+  });
+});
