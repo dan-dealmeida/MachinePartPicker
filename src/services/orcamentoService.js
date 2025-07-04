@@ -1,8 +1,9 @@
+// src/services/orcamentoService.js
 const db = require('../../database/databaseManager');
 
 const orcamentoService = {
-  save: (orcamento) => {
-    if (!orcamento || !orcamento.nomeCliente || !orcamento.itens) {
+  save: (orcamentoData) => {
+    if (!orcamentoData || !orcamentoData.nomeCliente || !orcamentoData.itens) {
       throw new Error("Dados do orçamento são inválidos.");
     }
     try {
@@ -12,10 +13,10 @@ const orcamentoService = {
       `);
       
       const info = stmt.run({
-        nome_cliente: orcamento.nomeCliente,
+        nome_cliente: orcamentoData.nomeCliente,
         data_criacao: new Date().toISOString(),
-        valor_total: orcamento.getTotal(),
-        itens: JSON.stringify(orcamento.itens) // Serializa a lista de itens
+        valor_total: orcamentoData.valorTotal, // Usa o valor já calculado vindo do renderer
+        itens: JSON.stringify(orcamentoData.itens) // Serializa a lista de itens
       });
 
       return { id: info.lastInsertRowid };
@@ -28,7 +29,6 @@ const orcamentoService = {
   getAll: () => {
     try {
       const stmt = db.prepare('SELECT * FROM orcamentos ORDER BY data_criacao DESC');
-      // Deserializa os itens de JSON para objeto
       const orcamentos = stmt.all().map(o => ({ ...o, itens: JSON.parse(o.itens) }));
       return orcamentos;
     } catch (error) {
