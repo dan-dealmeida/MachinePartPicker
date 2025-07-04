@@ -1,8 +1,103 @@
-Machine Part Picker - Desktop Quoting ApplicationA local-first desktop application built with Electron and Node.js to streamline the process of creating and managing quotes for complex machines and equipment. This project serves as a prototype to solve the inefficiencies of manual quoting, providing a centralized and reliable tool for sales and technical teams.📸 Application Demo(Placeholder for a GIF showing the application in action)📚 Table of Contents🚀 Key Features🛠️ Tech Stack & Architecture⚙️ Getting Started📜 Available Scripts📄 License🚀 Key Features🗂️ Centralized Catalog: Manage components and prices in a local SQLite database.📂 Category Management: Organize components into logical, collapsible categories.✨ Full CRUD Operations: Easily Create, Read, Update, and Delete components and categories.🧾 Intuitive Quote Builder: Add components to a quote with a single click.🧮 Dynamic Calculations: Totals and sub-totals are updated instantly.💸 Flexible Discount System: Apply percentage or fixed-value discounts using the Strategy Pattern.💾 Persistent Storage: All created quotes are saved locally for future reference.⚡ Non-Blocking UI: Built on a fully asynchronous architecture to ensure a responsive, freeze-free experience.🛠️ Tech Stack & Architectural ConceptsThis project was built with a focus on creating a stable, maintainable, and performant desktop application.CategoryTechnology / ConceptCore FrameworkElectronBackend RuntimeNode.jsDatabaseSQLite (via the sqlite3 npm package)FrontendHTML5, CSS3, Vanilla JavaScript (ES6+)<details><summary><strong>Architectural Highlights</strong></summary>Asynchronous IPC: Uses Electron's Inter-Process Communication (IPC) model to ensure the UI (Renderer Process) never blocks while waiting for database operations handled by the Main Process.Design Patterns:Singleton: Used to manage a single, controlled connection to the SQLite database.Observer: Implemented in pure JavaScript to make the UI instantly reactive to changes in the quote's state.Strategy: Applied to the discount system, allowing for different calculation methods to be added or swapped flexibly.</details>⚙️ Getting StartedFollow these instructions to get a copy of the project up and running on your local machine.PrerequisitesYou need to have Node.js (which includes npm) installed on your system.Installation & SetupClone the repository:git clone <your-repository-url>
-cd MachinePartPicker
-Install dependencies:npm install
-Rebuild native modules (if necessary):If you encounter any issues with the SQLite module, run the electron-rebuild command.npm run rebuild
-Set up the database:This script creates the orcamentos.db file and its internal tables. This step is mandatory before the first run.npm run db:setup
-Populate the database with sample data (optional):To have a rich catalog of components to work with, run the populate script.npm run db:populate
-Running the ApplicationOnce the setup is complete, you can start the application with:npm run start
-This will launch the Electron desktop window.📜 Available ScriptsCommandDescriptionnpm run startStarts the Electron application.npm run db:setupCreates the database schema (tables).npm run db:populateFills the database with a large set of sample components and categories.npm run rebuildRebuilds native Node.js modules against the Electron version.📄 LicenseThis project is licensed under the MIT License - see the LICENSE.md file for details.
+# Machine Part Picker - Desktop Quoting Application
+
+> A local-first desktop application built with Electron and Node.js to streamline the process of creating and managing quotes for complex machines and equipment. This project serves as a prototype to solve the inefficiencies of manual quoting, providing a centralized and reliable tool for sales and technical teams.
+
+---
+
+### 📸 Application Demo
+*(Placeholder for a GIF showing the application in action)*
+![Application Screenshot](https://i.imgur.com/239986ac-bcb0-4887-b02a-1df30a2f550d.png)
+
+---
+
+## 📚 Table of Contents
+- [🚀 Key Features](#-key-features)
+- [🛠️ Tech Stack & Architecture](#️-tech-stack--architectural-concepts)
+- [⚙️ Getting Started](#️-getting-started)
+- [📜 Available Scripts](#-available-scripts)
+- [📄 License](#-license)
+
+---
+
+## 🚀 Key Features
+
+* **🗂️ Centralized Catalog:** Manage components and prices in a local SQLite database.
+* **📂 Category Management:** Organize components into logical, collapsible categories.
+* **✨ Full CRUD Operations:** Easily Create, Read, Update, and Delete components and categories.
+* **🧾 Intuitive Quote Builder:** Add components to a quote with a single click.
+* **🧮 Dynamic Calculations:** Totals and sub-totals are updated instantly.
+* **💸 Flexible Discount System:** Apply percentage or fixed-value discounts using the Strategy Pattern.
+* **💾 Persistent Storage:** All created quotes are saved locally for future reference.
+* **⚡ Non-Blocking UI:** Built on a fully asynchronous architecture to ensure a responsive, freeze-free experience.
+
+---
+
+## 🛠️ Tech Stack & Architectural Concepts
+
+This project was built with a focus on creating a stable, maintainable, and performant desktop application.
+
+| Category          | Technology / Concept                                                                                              |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------- |
+| **Core Framework**| [Electron](https://www.electronjs.org/)                                                                           |
+| **Backend Runtime**| [Node.js](https://nodejs.org/)                                                                                    |
+| **Database** | [SQLite](https://www.sqlite.org/index.html) (via the `sqlite3` npm package)                                         |
+| **Frontend** | HTML5, CSS3, Vanilla JavaScript (ES6+)                                                                            |
+
+<details>
+<summary><strong>Architectural Highlights</strong></summary>
+
+-   **Asynchronous IPC:** Uses Electron's Inter-Process Communication (IPC) model to ensure the UI (Renderer Process) never blocks while waiting for database operations handled by the Main Process.
+-   **Design Patterns:**
+    -   **Singleton:** Used to manage a single, controlled connection to the SQLite database.
+    -   **Observer:** Implemented in pure JavaScript to make the UI instantly reactive to changes in the quote's state.
+    -   **Strategy:** Applied to the discount system, allowing for different calculation methods to be added or swapped flexibly.
+
+</details>
+
+---
+
+## ⚙️ Getting Started
+
+Follow these instructions to get a copy of the project up and running on your local machine.
+
+### Prerequisites
+
+You need to have [Node.js](https://nodejs.org/) (which includes npm) installed on your system.
+
+### Installation & Setup
+
+1.  **Clone the repository:**
+    ```bash
+    git clone <your-repository-url>
+    cd MachinePartPicker
+    ```
+
+2.  **Install dependencies:**
+    ```bash
+    npm install
+    ```
+
+3.  **Rebuild native modules (if necessary):**
+    If you encounter any issues with the SQLite module, run the `electron-rebuild` command.
+    ```bash
+    npm run rebuild
+    ```
+
+4.  **Set up the database:**
+    This script creates the `orcamentos.db` file and its internal tables. **This step is mandatory before the first run.**
+    ```bash
+    npm run db:setup
+    ```
+
+5.  **Populate the database with sample data (optional):**
+    To have a rich catalog of components to work with, run the populate script.
+    ```bash
+    npm run db:populate
+    ```
+
+### Running the Application
+
+Once the setup is complete, you can start the application with:
+
+```bash
+npm run start
