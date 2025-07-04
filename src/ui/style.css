@@ -108,3 +108,30 @@ form {
 .desconto-container > div { 
     flex-grow: 1; 
 }
+.status-message {
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    color: white;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+    height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.status-message.show {
+    opacity: 1;
+    height: auto;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.status-message.success {
+    background-color: #28a745; /* Verde */
+}
+
+.status-message.error {
+    background-color: #dc3545; /* Vermelho */
+}

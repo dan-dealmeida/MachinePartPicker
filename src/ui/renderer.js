@@ -48,6 +48,14 @@ class Orcamento {
         this.emit('update', this); // Notifica que o orçamento mudou
     }
     
+    removerItem(index) {
+        if (index > -1 && index < this.itens.length) {
+            this.itens.splice(index, 1);
+            this.recalcularSubTotal();
+            this.emit('update', this);
+        }
+    }
+
     recalcularSubTotal() {
         this.subTotal = this.itens.reduce((sum, item) => sum + item.preco, 0);
     }
@@ -71,7 +79,7 @@ class Orcamento {
 
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Referências aos elementos da UI (sem alterações)
+    // --- REFERÊNCIAS AOS ELEMENTOS DA UI ---
     const catalogoComponentesEl = document.getElementById('catalogo-componentes');
     const nomeClienteInput = document.getElementById('nome-cliente');
     const orcamentoItensContainerEl = document.getElementById('orcamento-itens-container');
@@ -88,10 +96,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const selectTipoDesconto = document.getElementById('select-tipo-desconto');
     const inputValorDesconto = document.getElementById('input-valor-desconto');
     const btnAplicarDesconto = document.getElementById('btn-aplicar-desconto');
+    const statusMessageEl = document.getElementById('status-message');
 
     let orcamentoAtual = null;
+    let statusTimeout;
 
-    // --- FUNÇÕES DE RENDERIZAÇÃO DA UI (sem alterações) ---
+    // --- FUNÇÃO DE NOTIFICAÇÃO ---
+    const showStatusMessage = (message, type = 'success') => {
+        clearTimeout(statusTimeout);
+        statusMessageEl.textContent = message;
+        statusMessageEl.className = `status-message ${type} show`;
+        statusTimeout = setTimeout(() => {
+            statusMessageEl.classList.remove('show');
+        }, 4000);
+    };
+
+    // --- FUNÇÕES DE RENDERIZAÇÃO DA UI ---
     const renderizarCatalogo = (componentes) => {
         catalogoComponentesEl.innerHTML = '';
         const componentesAgrupados = componentes.reduce((acc, comp) => {
@@ -100,6 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
             acc[categoria].push(comp);
             return acc;
         }, {});
+
         for (const categoriaNome in componentesAgrupados) {
             const details = document.createElement('details');
             details.open = true;
@@ -155,21 +176,22 @@ document.addEventListener('DOMContentLoaded', () => {
             renderizarSelectCategorias(categorias);
         } catch (error) {
             console.error("Erro ao carregar dados iniciais:", error);
-            alert("Erro fatal ao carregar dados do catálogo. Verifique o console.");
+            showStatusMessage("Erro fatal ao carregar dados do catálogo.", "error");
         }
     };
 
     const handleAddCategoria = async (event) => {
         event.preventDefault();
         const nome = nomeNovaCategoriaInput.value.trim();
-        if (!nome) return alert('O nome da categoria não pode ser vazio.');
+        if (!nome) return showStatusMessage('O nome da categoria não pode ser vazio.', 'error');
         try {
             await window.api.addCategoria({ nome });
-            alert(`Categoria "${nome}" adicionada com sucesso!`);
+            showStatusMessage(`Categoria "${nome}" adicionada com sucesso!`);
             nomeNovaCategoriaInput.value = '';
+            nomeNovaCategoriaInput.focus();
             carregarDadosIniciais();
         } catch (error) {
-            alert(`Erro ao adicionar categoria: ${error.message}`);
+            showStatusMessage(`Erro: ${error.message}`, 'error');
         }
     };
 
@@ -182,22 +204,23 @@ document.addEventListener('DOMContentLoaded', () => {
             categoria_id: parseInt(categoriaNovoComponenteSelect.value, 10)
         };
         if (!componente.nome || isNaN(componente.preco) || isNaN(componente.categoria_id)) {
-            return alert('Por favor, preencha todos os campos obrigatórios.');
+            return showStatusMessage('Por favor, preencha todos os campos obrigatórios.', 'error');
         }
         try {
             await window.api.addComponente(componente);
-            alert(`Componente "${componente.nome}" adicionado com sucesso!`);
+            showStatusMessage(`Componente "${componente.nome}" adicionado!`);
             formAddComponente.reset();
+            nomeNovoComponenteInput.focus();
             carregarDadosIniciais();
         } catch (error) {
-            alert(`Erro ao adicionar componente: ${error.message}`);
+            showStatusMessage(`Erro: ${error.message}`, 'error');
         }
     };
 
     const salvarOrcamento = async () => {
-        if (!orcamentoAtual || orcamentoAtual.itens.length === 0) return alert('Não é possível salvar um orçamento vazio.');
+        if (!orcamentoAtual || orcamentoAtual.itens.length === 0) return showStatusMessage('Não é possível salvar um orçamento vazio.', 'error');
         orcamentoAtual.nomeCliente = nomeClienteInput.value.trim();
-        if (!orcamentoAtual.nomeCliente) return alert('Por favor, insira o nome do cliente.');
+        if (!orcamentoAtual.nomeCliente) return showStatusMessage('Por favor, insira o nome do cliente.', 'error');
         try {
             const dadosParaSalvar = {
                 nomeCliente: orcamentoAtual.nomeCliente,
@@ -205,12 +228,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 valorTotal: orcamentoAtual.getTotal()
             };
             const resultado = await window.api.salvarOrcamento(dadosParaSalvar);
-            alert(`Orçamento salvo com sucesso! ID: ${resultado.id}`);
+            showStatusMessage(`Orçamento salvo com sucesso! ID: ${resultado.id}`);
             nomeClienteInput.value = '';
             iniciarNovoOrcamento();
         } catch (error) {
             console.error('Erro ao salvar orçamento:', error);
-            alert(`Erro ao salvar orçamento: ${error.message}`);
+            showStatusMessage(`Erro ao salvar orçamento: ${error.message}`, 'error');
         }
     };
     
@@ -224,7 +247,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const iniciarNovoOrcamento = () => {
         const nomeCliente = nomeClienteInput.value.trim() || 'Cliente Padrão';
         orcamentoAtual = new Orcamento(nomeCliente);
-        // A MÁGICA DO OBSERVER RESTAURADA:
         orcamentoAtual.on('update', renderizarOrcamento);
         renderizarOrcamento();
         selectTipoDesconto.value = '';
@@ -236,7 +258,6 @@ document.addEventListener('DOMContentLoaded', () => {
             iniciarNovoOrcamento();
         }
         orcamentoAtual.adicionarItem(componente);
-        // NÃO PRECISAMOS MAIS CHAMAR renderizarOrcamento() AQUI! O Observer faz isso.
     };
 
     // --- INICIALIZAÇÃO E EVENT LISTENERS ---

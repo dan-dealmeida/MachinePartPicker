@@ -8,12 +8,11 @@ if (!db) {
 
 console.log('Iniciando a configuração do banco de dados com a biblioteca sqlite3...');
 
-const setupStatements = `
+const createTables = `
   CREATE TABLE IF NOT EXISTS categorias (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     nome TEXT NOT NULL UNIQUE
   );
-
   CREATE TABLE IF NOT EXISTS componentes (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     nome TEXT NOT NULL UNIQUE,
@@ -22,7 +21,6 @@ const setupStatements = `
     categoria_id INTEGER,
     FOREIGN KEY (categoria_id) REFERENCES categorias (id)
   );
-
   CREATE TABLE IF NOT EXISTS orcamentos (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     nome_cliente TEXT NOT NULL,
@@ -32,38 +30,37 @@ const setupStatements = `
   );
 `;
 
-// db.serialize garante que os comandos dentro dele rodem em sequência.
+const insertInitialData = `
+  INSERT OR IGNORE INTO categorias (nome) VALUES ('Processadores'), ('Memórias'), ('Armazenamento');
+`;
+
+// db.serialize garante que os comandos rodem em sequência.
 db.serialize(() => {
-  // Executa as criações de tabela.
-  db.exec(setupStatements, (err) => {
+  // O método .exec pode executar múltiplos statements de uma vez.
+  db.exec(createTables, (err) => {
     if (err) {
       console.error('Erro ao criar as tabelas:', err.message);
-    } else {
-      console.log('Tabelas criadas com sucesso ou já existentes.');
-
-      // Após criar as tabelas, insere os dados de exemplo.
-      const insertStatements = `
-        INSERT INTO categorias (nome) SELECT 'Processadores' WHERE NOT EXISTS (SELECT 1 FROM categorias WHERE nome = 'Processadores');
-        INSERT INTO categorias (nome) SELECT 'Memórias' WHERE NOT EXISTS (SELECT 1 FROM categorias WHERE nome = 'Memórias');
-        INSERT INTO categorias (nome) SELECT 'Armazenamento' WHERE NOT EXISTS (SELECT 1 FROM categorias WHERE nome = 'Armazenamento');
-      `;
-
-      db.exec(insertStatements, (err) => {
-        if (err) {
-          console.error('Erro ao inserir categorias de exemplo:', err.message);
-        } else {
-          console.log('Categorias de exemplo inseridas com sucesso.');
-        }
-
-        // Fecha a conexão com o banco de dados após tudo terminar.
-        db.close((err) => {
-          if (err) {
-            console.error('Erro ao fechar a conexão com o banco de dados:', err.message);
-          } else {
-            console.log('Conexão com o banco de dados fechada.');
-          }
-        });
-      });
+      // Fecha a conexão mesmo se der erro.
+      db.close();
+      return;
     }
+    console.log('Tabelas criadas com sucesso ou já existentes.');
+
+    db.exec(insertInitialData, (err) => {
+      if (err) {
+        console.error('Erro ao inserir dados iniciais:', err.message);
+      } else {
+        console.log('Dados iniciais inseridos com sucesso.');
+      }
+      
+      // Este é o ponto final. Fecha a conexão aqui.
+      db.close((err) => {
+        if (err) {
+          console.error('Erro ao fechar a conexão:', err.message);
+        } else {
+          console.log('Setup finalizado. Conexão com o banco de dados fechada.');
+        }
+      });
+    });
   });
 });
